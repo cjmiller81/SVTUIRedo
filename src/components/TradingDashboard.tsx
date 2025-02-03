@@ -51,14 +51,19 @@ export default function TradingDashboard() {
       name: "IVL Automated",
       icon: <TrendingUp className="h-5 w-5 text-green-500" />,
       strategies: [
-        { id: '1', firm: 'Tastytrade', accountNumber: "12345", tradeSymbol: "AAPL", tradeQty: 100, isActive: true, capitalAllocation: 10000, orders: [
-          { id: '1', type: 'Entry', status: 'Filled', symbol: 'AAPL', qty: 50 },
-          { id: '2', type: 'Exit', status: 'Working', symbol: 'AAPL', qty: 25 },
-        ] },
-        { id: '2', firm: 'TD Ameritrade', accountNumber: "23456", tradeSymbol: "GOOGL", tradeQty: 50, isActive: false, capitalAllocation: 15000, orders: [
-          { id: '3', type: 'Entry', status: 'Pending', symbol: 'GOOGL', qty: 30 },
-          { id: '4', type: 'Exit', status: 'Cancelled', symbol: 'GOOGL', qty: 20 },
-        ] },
+        { 
+          id: '1', 
+          firm: 'Tastytrade', 
+          accountNumber: "12345", 
+          tradeSymbol: "AAPL", 
+          tradeQty: 100, 
+          isActive: true, 
+          capitalAllocation: 10000, 
+          orders: [
+            { id: '1', type: 'Entry', status: 'Filled', symbol: 'AAPL', qty: 50 },
+            { id: '2', type: 'Exit', status: 'Working', symbol: 'AAPL', qty: 25 },
+          ] 
+        }
       ]
     },
     {
@@ -480,8 +485,11 @@ export default function TradingDashboard() {
                                 </div>
                               </div>
                               <div className="flex items-center space-x-4">
-                                <div className="flex items-center space-x-2">
-                                  <Checkbox id="closing" className="border-gray-400 text-blue-500 focus:ring-blue-500" />
+                                <div className="flex items-center space-x-2 bg-[#1a1f2c] px-3 py-2 rounded-lg">
+                                  <Checkbox 
+                                    id="closing" 
+                                    className="border-gray-400 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500" 
+                                  />
                                   <Label htmlFor="closing" className="text-sm text-gray-300">
                                     Closing Only
                                   </Label>
@@ -654,8 +662,7 @@ export default function TradingDashboard() {
                                 {availableFirms.map((firm) => (
                                   <SelectItem key={firm} value={firm}>
                                     {firm}
-                                  </SelectItem>
-                                ))}
+                                  </SelectItem> ))}
                               </SelectContent>
                             </Select>
                           </div>
