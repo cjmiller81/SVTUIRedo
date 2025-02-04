@@ -488,7 +488,7 @@ export default function TradingDashboard() {
                                 <div className="flex items-center space-x-2 bg-[#1a1f2c] px-3 py-2 rounded-lg">
                                   <Checkbox 
                                     id="closing" 
-                                    className="border-gray-400 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500" 
+                                    className="border-white data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500" 
                                   />
                                   <Label htmlFor="closing" className="text-sm text-gray-300">
                                     Closing Only
@@ -653,9 +653,8 @@ export default function TradingDashboard() {
                             </Label>
                             <Select
                               onValueChange={(value) => setNewBrokerageConnection({ ...newBrokerageConnection, firm: value })}
-                              className="col-span-3"
                             >
-                              <SelectTrigger>
+                              <SelectTrigger className="col-span-3">
                                 <SelectValue placeholder="Select a firm" />
                               </SelectTrigger>
                               <SelectContent>
@@ -691,7 +690,9 @@ export default function TradingDashboard() {
                           </div>
                         </div>
                         <DialogTrigger asChild>
-                          <Button onClick={addBrokerageConnection} className="bg-blue-500/20 text-blue-400 hover:bg-blue-500/30">Add Connection</Button>
+                          <Button onClick={addBrokerageConnection} className="bg-blue-500/20 text-blue-400 hover:bg-blue-500/30">
+                            Add Connection
+                          </Button>
                         </DialogTrigger>
                       </DialogContent>
                     </Dialog>
