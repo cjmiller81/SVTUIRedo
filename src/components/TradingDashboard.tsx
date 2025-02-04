@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
-import { TrendingUp, BarChart2, RefreshCcw, Play, Pause, Edit, Trash2, Plus, ChevronDown, ChevronRight, Menu, Layers } from 'lucide-react'
+import { TrendingUp, BarChart2, RefreshCcw, Play, Pause, Edit, Trash2, Plus, ChevronDown, ChevronRight, Menu, ArrowDownUp } from 'lucide-react'
 
 type Order = {
   id: string;
@@ -27,7 +27,7 @@ type Strategy = {
   tradeQty?: number;
   isActive: boolean;
   capitalAllocation?: number;
-  allocationValue?: number;
+  allocationValue?: string;
   preset?: 'Bearish' | 'Cautious' | 'Neutral' | 'Bullish' | 'Super Bullish';
   orders: Order[];
 }
@@ -78,17 +78,12 @@ export default function TradingDashboard() {
       ]
     },
     {
-      name: "FIFO",
-      icon: <RefreshCcw className="h-5 w-5 text-purple-500" />,
-      strategies: [
-        { id: '9', firm: 'TD Ameritrade', accountNumber: "90123", tradeSymbol: "TSLA", tradeQty: 75, isActive: true, orders: [] },
-        { id: '10', firm: 'Interactive Brokers', accountNumber: "01234", tradeSymbol: "NVDA", tradeQty: 50, isActive: false, orders: [] }
-      ]
-    },
-    {
       name: "Diagonal Hedge",
-      icon: <Layers className="h-5 w-5 text-orange-500" />,
-      strategies: []
+      icon: <ArrowDownUp className="h-5 w-5 text-purple-500" />,
+      strategies: [
+        { id: '7', firm: 'TD Ameritrade', accountNumber: "78901", tradeSymbol: "SPX", allocationValue: "$40,000", preset: 'Neutral', isActive: true, orders: [] },
+        { id: '8', firm: 'Tastytrade', accountNumber: "89012", tradeSymbol: "NDX", allocationValue: "$40,000", preset: 'Bullish', isActive: false, orders: [] }
+      ]
     }
   ]);
 
@@ -97,8 +92,9 @@ export default function TradingDashboard() {
     firm: '',
     accountNumber: '',
     tradeSymbol: '',
+    tradeQty: 0,
     isActive: false,
-    allocationValue: 40000,
+    allocationValue: '$40,000',
     preset: 'Neutral',
     orders: []
   });
@@ -116,7 +112,7 @@ export default function TradingDashboard() {
     });
     return initialState;
   });
-  const [activeSection, setActiveSection] = useState<'ivl' | 'sdte' | 'fifo' | 'diagonal' | 'brokerage'>('ivl');
+  const [activeSection, setActiveSection] = useState<'ivl' | 'sdte' | 'diagonal' | 'brokerage'>('ivl');
   const [currentAllocation, setCurrentAllocation] = useState("$80,715");
   const [nextEntryAllocation, setNextEntryAllocation] = useState("$0");
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -132,113 +128,11 @@ export default function TradingDashboard() {
     password: '',
   });
 
-  const addStrategy = () => {
-    if (currentStrategyType) {
-      setStrategyTypes(prevTypes => 
-        prevTypes.map(type => 
-          type.name === currentStrategyType
-            ? { ...type, strategies: [...type.strategies, { ...newStrategy, id: Date.now().toString() }] }
-            : type
-        )
-      );
-      setNewStrategy({
-        id: '',
-        firm: '',
-        accountNumber: '',
-        tradeSymbol: '',
-        isActive: false,
-        allocationValue: 40000,
-        preset: 'Neutral',
-        orders: []
-      });
-      setCurrentStrategyType("");
-    }
-  };
+  const renderStrategyDialog = (type: StrategyType) => {
+    const isDiagonalHedge = type.name === "Diagonal Hedge";
 
-  const renderStrategyForm = (type: StrategyType) => {
-    if (type.name === "Diagonal Hedge") {
-      return (
-        <>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="brokerage" className="text-right text-gray-400">
-              Brokerage
-            </Label>
-            <Select
-              onValueChange={(value) => setNewStrategy({ ...newStrategy, firm: value })}
-            >
-              <SelectTrigger className="col-span-3">
-                <SelectValue placeholder="Select a brokerage" />
-              </SelectTrigger>
-              <SelectContent>
-                {availableBrokerages.map((brokerage) => (
-                  <SelectItem key={brokerage} value={brokerage}>
-                    {brokerage}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="accountNumber" className="text-right text-gray-400">
-              Account #
-            </Label>
-            <Input
-              id="accountNumber"
-              value={newStrategy.accountNumber}
-              onChange={(e) => setNewStrategy({ ...newStrategy, accountNumber: e.target.value })}
-              className="col-span-3 bg-[#0a0d14] border-blue-900/40 text-gray-300"
-            />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="tradeSymbol" className="text-right text-gray-400">
-              Trade Symbol
-            </Label>
-            <Input
-              id="tradeSymbol"
-              value={newStrategy.tradeSymbol}
-              onChange={(e) => setNewStrategy({ ...newStrategy, tradeSymbol: e.target.value })}
-              className="col-span-3 bg-[#0a0d14] border-blue-900/40 text-gray-300"
-            />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="allocationValue" className="text-right text-gray-400">
-              Allocation Value
-            </Label>
-            <Input
-              id="allocationValue"
-              type="number"
-              value={newStrategy.allocationValue}
-              onChange={(e) => setNewStrategy({ ...newStrategy, allocationValue: parseFloat(e.target.value) })}
-              className="col-span-3 bg-[#0a0d14] border-blue-900/40 text-gray-300"
-            />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="preset" className="text-right text-gray-400">
-              Preset
-            </Label>
-            <Select
-              onValueChange={(value) => setNewStrategy({ ...newStrategy, preset: value as Strategy['preset'] })}
-              defaultValue="Neutral"
-            >
-              <SelectTrigger className="col-span-3">
-                <SelectValue placeholder="Select a preset" />
-              </SelectTrigger>
-              <SelectContent>
-                {presetOptions.map((preset) => (
-                  <SelectItem key={preset} value={preset}>
-                    {preset}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </>
-      );
-    }
-
-    // Default form for other strategy types
     return (
-      <>
+      <div className="grid gap-4 py-4">
         <div className="grid grid-cols-4 items-center gap-4">
           <Label htmlFor="brokerage" className="text-right text-gray-400">
             Brokerage
@@ -280,18 +174,62 @@ export default function TradingDashboard() {
             className="col-span-3 bg-[#0a0d14] border-blue-900/40 text-gray-300"
           />
         </div>
-        <div className="grid grid-cols-4 items-center gap-4">
-          <Label htmlFor="tradeQty" className="text-right text-gray-400">
-            Trade Qty
-          </Label>
-          <Input
-            id="tradeQty"
-            type="number"
-            value={newStrategy.tradeQty}
-            onChange={(e) => setNewStrategy({ ...newStrategy, tradeQty: parseInt(e.target.value) })}
-            className="col-span-3 bg-[#0a0d14] border-blue-900/40 text-gray-300"
-          />
-        </div>
+        {isDiagonalHedge ? (
+          <>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="allocationValue" className="text-right text-gray-400">
+                Allocation Value
+              </Label>
+              <Input
+                id="allocationValue"
+                value={newStrategy.allocationValue}
+                onChange={(e) => {
+                  const value = e.target.value.replace(/[^\d]/g, '');
+                  setNewStrategy({ 
+                    ...newStrategy, 
+                    allocationValue: value ? `$${parseInt(value).toLocaleString()}` : '$'
+                  });
+                }}
+                className="col-span-3 bg-[#0a0d14] border-blue-900/40 text-gray-300"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="preset" className="text-right text-gray-400">
+                Preset
+              </Label>
+              <Select
+                onValueChange={(value) => setNewStrategy({ 
+                  ...newStrategy, 
+                  preset: value as Strategy['preset']
+                })}
+              >
+                <SelectTrigger className="col-span-3">
+                  <SelectValue placeholder="Select a preset" />
+                </SelectTrigger>
+                <SelectContent>
+                  {presetOptions.map((preset) => (
+                    <SelectItem key={preset} value={preset}>
+                      {preset}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </>
+        ) : (
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="tradeQty" className="text-right text-gray-400">
+              Trade Qty
+            </Label>
+            <Input
+              id="tradeQty"
+              type="number"
+              value={newStrategy.tradeQty}
+              onChange={(e) => setNewStrategy({ ...newStrategy, tradeQty: parseInt(e.target.value) })}
+              className="col-span-3 bg-[#0a0d14] border-blue-900/40 text-gray-300"
+            />
+          </div>
+        )}
         {type.name === "IVL Automated" && (
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="capitalAllocation" className="text-right text-gray-400">
@@ -306,8 +244,32 @@ export default function TradingDashboard() {
             />
           </div>
         )}
-      </>
+      </div>
     );
+  };
+
+  const addStrategy = () => {
+    if (currentStrategyType) {
+      setStrategyTypes(prevTypes => 
+        prevTypes.map(type => 
+          type.name === currentStrategyType
+            ? { ...type, strategies: [...type.strategies, { ...newStrategy, id: Date.now().toString() }] }
+            : type
+        )
+      );
+      setNewStrategy({ 
+        id: '', 
+        firm: '', 
+        accountNumber: '', 
+        tradeSymbol: '', 
+        tradeQty: 0, 
+        isActive: false, 
+        allocationValue: '$40,000',
+        preset: 'Neutral',
+        orders: [] 
+      });
+      setCurrentStrategyType("");
+    }
   };
 
   const toggleStrategyStatus = (typeName: string, strategyId: string) => {
@@ -397,9 +359,7 @@ export default function TradingDashboard() {
               <DialogHeader>
                 <DialogTitle className="text-gray-200">Add New Strategy</DialogTitle>
               </DialogHeader>
-              <div className="grid gap-4 py-4">
-                {renderStrategyForm(type)}
-              </div>
+              {renderStrategyDialog(type)}
               <DialogTrigger asChild>
                 <Button onClick={addStrategy} className="bg-blue-500/20 text-blue-400 hover:bg-blue-500/30">Add Strategy</Button>
               </DialogTrigger>
@@ -417,13 +377,13 @@ export default function TradingDashboard() {
                 <TableHead className="text-gray-400">Account #</TableHead>
                 <TableHead className="text-gray-400">Trade Symbol</TableHead>
                 {type.name !== "Diagonal Hedge" && <TableHead className="text-gray-400">Trade Qty</TableHead>}
-                {type.name === "IVL Automated" && <TableHead className="text-gray-400">Capital Allocation</TableHead>}
                 {type.name === "Diagonal Hedge" && (
                   <>
                     <TableHead className="text-gray-400">Allocation Value</TableHead>
                     <TableHead className="text-gray-400">Preset</TableHead>
                   </>
                 )}
+                {type.name === "IVL Automated" && <TableHead className="text-gray-400">Capital Allocation</TableHead>}
                 <TableHead className="text-gray-400">Status</TableHead>
                 <TableHead className="text-gray-400">Actions</TableHead>
               </TableRow>
@@ -449,21 +409,11 @@ export default function TradingDashboard() {
                     </TableCell>
                     <TableCell className="text-gray-300">
                       {editingStrategy?.id === strategy.id ? (
-                        <Select
-                          onValueChange={(value) => setEditingStrategy({ ...editingStrategy, firm: value })}
-                          defaultValue={editingStrategy.firm}
-                        >
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {availableBrokerages.map((brokerage) => (
-                              <SelectItem key={brokerage} value={brokerage}>
-                                {brokerage}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <Input
+                          value={editingStrategy.firm}
+                          onChange={(e) => setEditingStrategy({ ...editingStrategy, firm: e.target.value })}
+                          className="bg-[#0a0d14] border-blue-900/40 text-gray-300"
+                        />
                       ) : (
                         strategy.firm
                       )}
@@ -504,41 +454,35 @@ export default function TradingDashboard() {
                         )}
                       </TableCell>
                     )}
-                    {type.name === "IVL Automated" && (
-                      <TableCell className="text-gray-300">
-                        {editingStrategy?.id === strategy.id ? (
-                          <Input
-                            type="number"
-                            value={editingStrategy.capitalAllocation}
-                            onChange={(e) => setEditingStrategy({ ...editingStrategy, capitalAllocation: parseFloat(e.target.value) })}
-                            className="bg-[#0a0d14] border-blue-900/40 text-gray-300"
-                          />
-                        ) : (
-                          strategy.capitalAllocation ? `$${strategy.capitalAllocation.toLocaleString()}` : 'N/A'
-                        )}
-                      </TableCell>
-                    )}
                     {type.name === "Diagonal Hedge" && (
                       <>
                         <TableCell className="text-gray-300">
                           {editingStrategy?.id === strategy.id ? (
                             <Input
-                              type="number"
                               value={editingStrategy.allocationValue}
-                              onChange={(e) => setEditingStrategy({ ...editingStrategy, allocationValue: parseFloat(e.target.value) })}
+                              onChange={(e) => {
+                                const value = e.target.value.replace(/[^\d]/g, '');
+                                setEditingStrategy({ 
+                                  ...editingStrategy, 
+                                  allocationValue: value ? `$${parseInt(value).toLocaleString()}` : '$'
+                                });
+                              }}
                               className="bg-[#0a0d14] border-blue-900/40 text-gray-300"
                             />
                           ) : (
-                            strategy.allocationValue ? `$${strategy.allocationValue.toLocaleString()}` : 'N/A'
+                            strategy.allocationValue
                           )}
                         </TableCell>
                         <TableCell className="text-gray-300">
                           {editingStrategy?.id === strategy.id ? (
                             <Select
-                              onValueChange={(value) => setEditingStrategy({ ...editingStrategy, preset: value as Strategy['preset'] })}
-                              defaultValue={editingStrategy.preset}
+                              value={editingStrategy.preset}
+                              onValueChange={(value) => setEditingStrategy({ 
+                                ...editingStrategy, 
+                                preset: value as Strategy['preset']
+                              })}
                             >
-                              <SelectTrigger>
+                              <SelectTrigger className="border-blue-900/40">
                                 <SelectValue />
                               </SelectTrigger>
                               <SelectContent>
@@ -554,6 +498,20 @@ export default function TradingDashboard() {
                           )}
                         </TableCell>
                       </>
+                    )}
+                    {type.name === "IVL Automated" && (
+                      <TableCell className="text-gray-300">
+                        {editingStrategy?.id === strategy.id ? (
+                          <Input
+                            type="number"
+                            value={editingStrategy.capitalAllocation}
+                            onChange={(e) => setEditingStrategy({ ...editingStrategy, capitalAllocation: parseFloat(e.target.value) })}
+                            className="bg-[#0a0d14] border-blue-900/40 text-gray-300"
+                          />
+                        ) : (
+                          strategy.capitalAllocation ? `$${strategy.capitalAllocation.toLocaleString()}` : 'N/A'
+                        )}
+                      </TableCell>
                     )}
                     <TableCell>
                       <Badge 
@@ -706,7 +664,7 @@ export default function TradingDashboard() {
             </TableBody>
           </Table>
         </div>
-       </CardContent>
+      </CardContent>
     </Card>
   );
 
@@ -736,12 +694,13 @@ export default function TradingDashboard() {
               activeSection === 'brokerage' ? 'bg-blue-900/20 text-blue-400' : 'text-gray-400 hover:bg-blue-900/10'
             }`}
           >
+            <RefreshCcw className="h-5 w-5" />
             <span>Brokerage</span>
           </button>
 
           {/* Strategies Section */}
           <div>
-            <h2 className="px-4 text-sm font-semibold text-gray-400 uppercase tracking-wider">
+            <h2 className="px-4 text- sm font-semibold text-gray-400 uppercase tracking-wider">
               Strategies
             </h2>
             <div className="mt-2 space-y-1">
@@ -769,7 +728,7 @@ export default function TradingDashboard() {
                   activeSection === 'diagonal' ? 'bg-blue-900/20 text-blue-400' : 'text-gray-400 hover:bg-blue-900/10'
                 }`}
               >
-                <Layers className="h-5 w-5" />
+                <ArrowDownUp className="h-5 w-5" />
                 <span>Diagonal Hedge</span>
               </button>
             </div>
@@ -792,7 +751,7 @@ export default function TradingDashboard() {
           <div className="max-w-7xl mx-auto">
             {activeSection === 'ivl' && renderStrategyCard(strategyTypes[0])}
             {activeSection === 'sdte' && renderStrategyCard(strategyTypes[1])}
-            {activeSection === 'diagonal' && renderStrategyCard(strategyTypes[3])}
+            {activeSection === 'diagonal' && renderStrategyCard(strategyTypes[2])}
             {activeSection === 'brokerage' && (
               <Card className="bg-[#1a1f2c] border-blue-900/20">
                 <CardHeader>
@@ -810,14 +769,14 @@ export default function TradingDashboard() {
                         </DialogHeader>
                         <div className="grid gap-4 py-4">
                           <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="brokerage" className="text-right text-gray-400">
-                              Brokerage
+                            <Label htmlFor="firm" className="text-right text-gray-400">
+                              Firm
                             </Label>
                             <Select
                               onValueChange={(value) => setNewBrokerageConnection({ ...newBrokerageConnection, firm: value })}
                             >
                               <SelectTrigger className="col-span-3">
-                                <SelectValue placeholder="Select a brokerage" />
+                                <SelectValue placeholder="Select a brokerage firm" />
                               </SelectTrigger>
                               <SelectContent>
                                 {availableBrokerages.map((brokerage) => (
@@ -866,7 +825,7 @@ export default function TradingDashboard() {
                     <Table>
                       <TableHeader>
                         <TableRow className="border-blue-900/20 hover:bg-blue-900/10">
-                          <TableHead className="text-gray-400">Brokerage</TableHead>
+                          <TableHead className="text-gray-400">Firm</TableHead>
                           <TableHead className="text-gray-400">Username</TableHead>
                           <TableHead className="text-gray-400">Status</TableHead>
                           <TableHead className="text-gray-400">Actions</TableHead>
@@ -889,14 +848,16 @@ export default function TradingDashboard() {
                               </Badge>
                             </TableCell>
                             <TableCell>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => removeBrokerageConnection(connection.id)}
-                                className="border-blue-900/40 hover:bg-blue-900/20"
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
+                              <div className="flex space-x-2">
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => removeBrokerageConnection(connection.id)}
+                                  className="border-blue-900/40 hover:bg-blue-900/20"
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
                             </TableCell>
                           </TableRow>
                         ))}
