@@ -81,8 +81,7 @@ export default function TradingDashboard() {
       name: "Diagonal Hedge",
       icon: <ArrowDownUp className="h-5 w-5 text-purple-500" />,
       strategies: [
-        { id: '7', firm: 'TD Ameritrade', accountNumber: "78901", tradeSymbol: "SPX", allocationValue: "$40,000", preset: 'Neutral', isActive: true, orders: [] },
-        { id: '8', firm: 'Tastytrade', accountNumber: "89012", tradeSymbol: "NDX", allocationValue: "$40,000", preset: 'Bullish', isActive: false, orders: [] }
+        { id: '8', firm: 'Tastytrade', accountNumber: "89012", tradeSymbol: "/ES", allocationValue: "$40,000", preset: 'Bullish', isActive: false, orders: [] }
       ]
     }
   ]);
@@ -700,12 +699,12 @@ export default function TradingDashboard() {
 
           {/* Strategies Section */}
           <div>
-            <h2 className="px-4 text- sm font-semibold text-gray-400 uppercase tracking-wider">
+            <h2 className="px-4 text-sm font-semibold text-gray-400 uppercase tracking-wider">
               Strategies
             </h2>
             <div className="mt-2 space-y-1">
               <button
-                onClick={() => setActiveSection('ivl')}
+                onClick={() => setActiveSection('ivl' )}
                 className={`w-full text-left px-4 py-2 rounded-lg flex items-center space-x-2 ${
                   activeSection === 'ivl' ? 'bg-blue-900/20 text-blue-400' : 'text-gray-400 hover:bg-blue-900/10'
                 }`}
