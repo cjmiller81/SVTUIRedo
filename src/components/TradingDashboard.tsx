@@ -548,12 +548,12 @@ export default function TradingDashboard() {
                                   })
                                 }
                               >
-                                <SelectTrigger className="border-blue-900/40 text-black [&>svg]:text-black">
+                                <SelectTrigger className="bg-white text-black border-blue-900/40">
                                   <SelectValue />
                                 </SelectTrigger>
-                                <SelectContent>
+                                <SelectContent className="bg-white">
                                   {presetOptions.map((preset) => (
-                                    <SelectItem key={preset} value={preset} className="hover:bg-gray-200">
+                                    <SelectItem key={preset} value={preset} className="text-black hover:bg-gray-200">
                                       {preset}
                                     </SelectItem>
                                   ))}
