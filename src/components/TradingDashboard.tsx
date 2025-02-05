@@ -221,23 +221,6 @@ export default function TradingDashboard() {
           {isDiagonalHedge ? (
             <>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="allocationValue" className="text-right text-gray-400">
-                  Allocation Value
-                </Label>
-                <Input
-                  id="allocationValue"
-                  value={newStrategy.allocationValue}
-                  onChange={(e) => {
-                    const value = e.target.value.replace(/[^\d]/g, "")
-                    setNewStrategy({
-                      ...newStrategy,
-                      allocationValue: value ? `$${Number.parseInt(value).toLocaleString()}` : "$0",
-                    })
-                  }}
-                  className="col-span-3 bg-[#0a0d14] border-blue-900/40 text-gray-300"
-                />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="preset" className="text-right text-gray-400">
                   Preset
                 </Label>
@@ -261,6 +244,23 @@ export default function TradingDashboard() {
                     ))}
                   </SelectContent>
                 </Select>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="allocationValue" className="text-right text-gray-400">
+                  Allocation Value
+                </Label>
+                <Input
+                  id="allocationValue"
+                  value={newStrategy.allocationValue}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/[^\d]/g, "")
+                    setNewStrategy({
+                      ...newStrategy,
+                      allocationValue: value ? `$${Number.parseInt(value).toLocaleString()}` : "$0",
+                    })
+                  }}
+                  className="col-span-3 bg-[#0a0d14] border-blue-900/40 text-gray-300"
+                />
               </div>
             </>
           ) : (
